@@ -6,7 +6,7 @@ const express = require('express');
 const authRouter = express.Router({ mergeParams: true });
 
 // Modules
-const { register, login } = require('./auth.controller');
+const { register, login, aboutMe } = require('./auth.controller');
 const { sendBodyError, sendFieldsError, sendApiSuccessResponse, sendApiErrorResponse } = require('../../services/server.response');
 const { checkFields } = require('../../services/request.checker');
 // 
@@ -17,7 +17,9 @@ Class definition
 */
 class AuthRouterClass {
 
-    constructor() { }
+    constructor({ passport }) {
+        this.passport = passport
+    }
 
     // Définition des routes
     routes() {
@@ -27,7 +29,7 @@ class AuthRouterClass {
             // Error: no body present
             if (typeof req.body === 'undefined' || req.body === null) { return sendBodyError(res, 'No body data provided') }
             // Check fields in the body
-            const { miss, extra, ok } = checkFields(['nick_name', 'email', 'password'], req.body);
+            const { miss, extra, ok } = checkFields(['email', 'password'], req.body);
             //=> Error: bad fields
             if (!ok) { return sendFieldsError(res, 'Bad fields provided', miss, extra) }
             // Request is OK
@@ -47,6 +49,12 @@ class AuthRouterClass {
             if (!ok) { return sendFieldsError(res, 'Bad fields provided', miss, extra) }
             // Request is OK
             login(req.body, res)
+                .then(apiRes => sendApiSuccessResponse(res, 'User is logged in', apiRes))
+                .catch(apiErr => sendApiErrorResponse(res, 'Error during user login', apiErr));
+        })
+        // Route USER login
+        authRouter.get('/me', this.passport.authenticate('jwt', { session: false }), (req, res) => {
+            aboutMe(req)
                 .then(apiRes => sendApiSuccessResponse(res, 'User is logged in', apiRes))
                 .catch(apiErr => sendApiErrorResponse(res, 'Error during user login', apiErr));
         })

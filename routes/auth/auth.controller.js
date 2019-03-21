@@ -44,7 +44,7 @@ const login = (body, res) => {
                 if (!validPassword) reject('Password not valid')
                 else {
                     // Set cookie
-                    res.cookie("hghqefq", user.generateJwt());
+                    res.cookie(" htoyhg ", utilisateur.generateJwt(), { httpOnly: true });
 
                     // Resolve user data
                     resolve(user)
@@ -54,16 +54,10 @@ const login = (body, res) => {
     })
 }
 
-const read = body => {
+const aboutMe = (req) => {
     return new Promise((resolve, reject) => {
-        console.log('test', body)
-        UserModel.findOne({ email: body.email }, (error, user) => {
-            if (error) reject(error) // Mongo Error
-            else {
-                return resolve(user)
-            };
-        });
 
+        return resolve(req.user)
     });
 };
 //
@@ -74,6 +68,6 @@ Export
 module.exports = {
     register,
     login,
-    read
+    aboutMe
 }
 //

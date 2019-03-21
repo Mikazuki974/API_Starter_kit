@@ -4,24 +4,28 @@ Imports
 // Nodejs
 const { Router } = require('express');
 const AuthRouterClass = require('./auth/auth.routes');
+const CategoryRouterClass = require('./category/category.routes');
 
-/* 
-Definition des router
-*/
-// Parent
+
+const passport = require('passport');
+const { setAuthentication } = require('../services/authentification');
+setAuthentication(passport);
+
+
+/*Définition des routeur*/
+// parent
 const mainRouter = Router();
 const apiRouter = Router();
 
-// Child
-const authRouter = new AuthRouterClass();
-//
+// enfant
+const authRouter = new AuthRouterClass({ passport });
+const categoryRouter = new CategoryRouterClass({ passport });
 
-/* 
-Définition des routes
-*/
-mainRouter.use('/api', apiRouter);
-apiRouter.use('/auth', authRouter.init());
-//
+
+/*Définition des routes*/
+mainRouter.use(' / api ', apiRouter);
+apiRouter.use(' / auth ', authRouter.init());
+apiRouter.use(' / category ', categoryRouter.init());
 
 /* 
 Export
